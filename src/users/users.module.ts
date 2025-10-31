@@ -8,5 +8,6 @@ import { AiServiceModule } from 'src/ai-service/ai-service.module';
   imports: [AiServiceModule],
   controllers: [UsersController],
   providers: [UsersService, JwtService],
+  exports: [UsersService]
 })
 export class UsersModule { }

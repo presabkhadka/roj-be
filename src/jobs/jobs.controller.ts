@@ -18,6 +18,11 @@ export class JobsController {
     return this.jobService.findAll()
   }
 
+  @Get('similar')
+  similar() {
+    return this.jobService.findSimilarity()
+  }
+
   @Get(':id')
   fetchUsingTitle(
     @Param('id') id: string
@@ -25,7 +30,7 @@ export class JobsController {
     return this.jobService.findExistingUsingId(id)
   }
 
-  @Patch(":id")
+  @Patch(':id')
   updateJob(
     @Param("id") id: string,
     @Body() dto: updateJobDto
