@@ -220,9 +220,46 @@ export class JobsService {
       similarityResults.map(x => {
         this.mailerService.sendMail({
           to: x.email,
-          subject: `You are the best fit for this job ${x.jobTitle}`,
-          text: `Hi ${x.userName}, We came to know that you are the best fit for this job ${x.jobId}`
-        })
+          subject: `You're a Top Candidate for ${x.jobTitle}!`,
+          html: `
+  <div style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+      
+      <!-- Header -->
+      <div style="background-color: #2a9d8f; color: #ffffff; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">Exciting Opportunity Awaits!</h1>
+      </div>
+      
+      <!-- Body -->
+      <div style="padding: 30px; color: #333;">
+        <p style="font-size: 16px;">Hello <strong>${x.userName}</strong>,</p>
+        <p style="font-size: 16px;">We are thrilled to let you know that you are an excellent match for the position of <strong>${x.jobTitle}</strong>.</p>
+        
+        <!-- Card -->
+        <div style="background-color: #f9f9f9; border-radius: 8px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+          <h2 style="margin-top: 0; color: #264653;">Job Details</h2>
+          <p><strong>Job ID:</strong> ${x.jobId}</p>
+          <p><strong>Role:</strong> ${x.jobTitle}</p>
+        </div>
+        
+        <p style="font-size: 16px;">We highly encourage you to apply and take the next step in your career journey. Your skills and experience are exactly what we are looking for!</p>
+        
+        <!-- CTA Button -->
+        <div style="text-align: center; margin: 30px 0;">
+        </div>
+        
+        <p style="font-size: 14px; color: #555;">We look forward to seeing your application. Best of luck!</p>
+        <p style="font-size: 14px; color: #555;">— The Hiring Team</p>
+      </div>
+      
+      <!-- Footer -->
+      <div style="background-color: #eee; padding: 15px; text-align: center; font-size: 12px; color: #888;">
+        This is an automated message. Please do not reply to this email.
+      </div>
+    </div>
+  </div>
+  `
+        });
       })
     )
 
