@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserTypes {
+  ADMIN
+  POSTER
+  SEEKER
+}
+
+model User {
+  id         String    @id @default(uuid())
+  firstName  String
+  lastName   String
+  username   String
+  email      String    @unique
+  password   String
+  userTypes  UserTypes
+  job        Jobs[]
+  skills     String[]
+  embeddings Json?
+}
+
+model Admin {
+  id        String    @id @default(uuid())
+  firstName String
+  lastName  String
+  username  String
+  email     String    @unique
+  password  String
+  userTypes UserTypes
+}
+
+model Jobs {
+  id          String    @id @default(uuid())
+  title       String    @unique
+  description String
+  createdAt   DateTime
+  closedAt    DateTime?
+  userId      String?
+  createdBy   User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    String[]
+  embeddings  Json?
+}
