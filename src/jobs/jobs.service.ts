@@ -154,7 +154,6 @@ export class JobsService {
     totalComparisons: number;
     topMatchesPerUser: SimilarityResult[];
     allSimilarities: SimilarityResult[];
-    // question: any
   }> {
     const allJobs = await this.findAllJobsWithEmbeddings();
     const allUsers = await this.findAllUsersWithEmbeddings();
@@ -217,17 +216,15 @@ export class JobsService {
       }, {} as Record<string, SimilarityResult>)
     );
 
-    let mockInterviewQuestion
 
     await Promise.all(
       similarityResults.map(async x => {
 
-        // mockInterviewQuestion = await this.ai.createMockInterviewQuestions(x.jobTitle)
-
-        this.mailerService.sendMail({
-          to: x.email,
-          subject: `You're a Top Candidate for ${x.jobTitle}!`,
-          html: `
+        try {
+          this.mailerService.sendMail({
+            to: x.email,
+            subject: `You're a Top Candidate for ${x.jobTitle}!`,
+            html: `
   <div style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
     <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
       
@@ -265,7 +262,76 @@ export class JobsService {
     </div>
   </div>
   `
-        });
+          });
+          await new Promise(r => setTimeout(r, 5000));
+        } catch (error) {
+          throw new Error(error)
+        }
+
+
+        const rejectedCandidates = allUsers.filter(usr => usr.email !== x.email)
+
+        const suggestions = await this.ai.giveSuggestions(x.jobTitle)
+
+        rejectedCandidates.map(async rej => {
+
+          try {
+            this.mailerService.sendMail({
+              to: rej.email,
+              subject: `Thank You for Applying for ${x.jobTitle} — Here's How to Improve!`,
+              html: `
+  <div style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #f6f9fc; padding: 20px;">
+    <div style="max-width: 650px; margin: auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+      
+      <!-- Header -->
+      <div style="background-color: #e63946; color: #ffffff; padding: 25px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">Thank You for Your Interest</h1>
+      </div>
+      
+      <!-- Body -->
+      <div style="padding: 30px; color: #333;">
+        <p style="font-size: 16px;">Dear <strong>${rej.username || 'Candidate'}</strong>,</p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          We sincerely appreciate your interest in the <strong>${x.jobTitle}</strong> position. After careful consideration, we’ve decided to move forward with other candidates whose experience more closely aligns with the job requirements.
+        </p>
+        
+        <!-- Feedback Section -->
+        <div style="background-color: #f9fafb; border-left: 4px solid #e63946; border-radius: 6px; padding: 20px; margin: 25px 0;">
+          <h2 style="margin-top: 0; color: #1d3557;">Suggestions for Improvement</h2>
+          <p style="font-size: 15px; line-height: 1.6; color: #444;">
+            ${suggestions}
+              </p>
+              </div>
+
+              <p style="font-size: 16px; line-height: 1.6;">
+                Don’t be discouraged — every great career path includes moments of learning and growth.We truly believe you have potential and encourage you to keep refining your skills and apply again in the future.
+        </p>
+
+            <div style="text-align: center; margin: 35px 0;" >
+          <a href="#" style = "background-color: #457b9d; color: #fff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-size: 15px; display: inline-block;" >
+          Explore More Opportunities
+          </a>
+          </div>
+
+          < p style = "font-size: 14px; color: #666;" >
+          Thank you again for your time and effort.We wish you every success in your job search and career ahead.
+        </p>
+            < p style = "font-size: 14px; color: #666;" >— The Hiring Team </p>
+              </div>
+
+              < !--Footer -->
+                <div style="background-color: #f1f1f1; padding: 15px; text-align: center; font-size: 12px; color: #999;" >
+                  This is an automated message.Please do not reply to this email.
+      </div>
+                    </div>
+                    </div>
+                      `
+            });
+            await new Promise(r => setTimeout(r, 5000));
+          } catch (error) {
+            throw new Error(error)
+          }
+        })
       })
     )
 
@@ -273,7 +339,6 @@ export class JobsService {
       totalComparisons: similarityResults.length,
       topMatchesPerUser,
       allSimilarities: similarityResults,
-      // question: mockInterviewQuestion
     };
   }
 }
