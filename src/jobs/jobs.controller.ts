@@ -1,10 +1,11 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { type updateJobDto, type createJobDto } from './dto/job-dto';
+import { AiService } from 'src/ai-service/ai-service.service';
 
 @Controller('jobs')
 export class JobsController {
-  constructor(private jobService: JobsService) { }
+  constructor(private jobService: JobsService, private aiService: AiService) { }
 
   @Post()
   createJob(
@@ -21,6 +22,13 @@ export class JobsController {
   @Get('similar')
   similar() {
     return this.jobService.findSimilarity()
+  }
+
+  @Get('questions/:stack')
+  mockQuestions(
+    @Param('stack') stack: string
+  ) {
+    return this.aiService.createMockInterviewQuestions(stack)
   }
 
   @Get(':id')

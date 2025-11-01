@@ -51,12 +51,15 @@ export class UsersService {
     return this.prisma.user.findMany({})
   }
 
-  async findOne(email: string) {
-    return this.prisma.user.findFirst({
+  async findOne(id: string) {
+    const user = await this.prisma.user.findFirst({
       where: {
-        email
+        id
       }
     })
+
+    return user
+
   }
 
   async userExists(id: string) {

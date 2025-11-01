@@ -154,6 +154,7 @@ export class JobsService {
     totalComparisons: number;
     topMatchesPerUser: SimilarityResult[];
     allSimilarities: SimilarityResult[];
+    // question: any
   }> {
     const allJobs = await this.findAllJobsWithEmbeddings();
     const allUsers = await this.findAllUsersWithEmbeddings();
@@ -216,8 +217,13 @@ export class JobsService {
       }, {} as Record<string, SimilarityResult>)
     );
 
+    let mockInterviewQuestion
+
     await Promise.all(
-      similarityResults.map(x => {
+      similarityResults.map(async x => {
+
+        // mockInterviewQuestion = await this.ai.createMockInterviewQuestions(x.jobTitle)
+
         this.mailerService.sendMail({
           to: x.email,
           subject: `You're a Top Candidate for ${x.jobTitle}!`,
@@ -267,6 +273,7 @@ export class JobsService {
       totalComparisons: similarityResults.length,
       topMatchesPerUser,
       allSimilarities: similarityResults,
+      // question: mockInterviewQuestion
     };
   }
 }
