@@ -35,7 +35,7 @@ export class AiService {
       const prompt = `
         You are an AI assistant helping generate mock interview questions.
         Based on the job title "${title}", create 20 technical and 5 behavioral interview questions.
-        Return the result as a structured JSON with keys "technical" and "behavioral".
+        Return the result as a structured JSON with keys "technical", "behavioral", "technicalAnswers", "behavioralAnswers" .
       `;
 
       const { text } = await generateText({
